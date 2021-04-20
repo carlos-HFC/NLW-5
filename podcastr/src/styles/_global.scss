@@ -1,0 +1,49 @@
+@use 'variables' as *;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  @media (max-width: 1079.9px) {
+    font-size: 93.75%;
+  }
+
+  @media (max-width: 719.9px) {
+    font-size: 87.5%;
+  }
+}
+
+body {
+  background: $gray-50;
+}
+
+body,
+button,
+input,
+textarea {
+  color: $gray-500;
+  font: 500 1rem Inter, sans-serif;
+}
+
+@for $i from 1 through 6 {
+  h#{$i} {
+    color: $gray-800;
+    font-family: Lexend, sans-serif;
+    font-weight: 600;
+  }
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+button {
+  cursor: pointer;
+}
