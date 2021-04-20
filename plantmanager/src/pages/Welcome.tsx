@@ -1,31 +1,35 @@
-import React, { useState } from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+import { Feather } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/core'
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import { Button } from '../components/Button'
 import watering from '../assets/watering.png'
 import colors from '../styles/colors'
+import fonts from '../styles/fonts'
 
 export function Welcome() {
-  const [visible, setVisible] = useState(false)
+  const navigation = useNavigation()
 
-  function handleVisibiity() {
-    setVisible(visible => !visible)
-  }
+  const handleStart = () => navigation.navigate('UserIdentification')
 
   return (
     <View style={styles.container}>
 
       <Text style={styles.title}>
-        Gerencie {'\n'} suas plantas {'\n'} de forma fácil
+        Gerencie {'\n'} suas plantas de {'\n'} forma fácil
       </Text>
 
-      <Image source={watering} style={styles.image} />
+      <Image source={watering} style={styles.image} resizeMode="contain" />
 
       <Text style={styles.subtitle}>
         Não esqueça mais de regar suas plantas. Nós cuidamos de lembrar você sempre que precisar.
       </Text>
 
-      <Button title=">" />
+      <TouchableOpacity style={styles.button} activeOpacity={.7} onPress={handleStart}>
+        <Text>
+          <Feather name="chevron-right" style={styles.buttonIcon} />
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -34,20 +38,23 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
     textAlign: "center",
     color: colors.heading,
     marginTop: 38,
+    lineHeight: 34,
+    fontFamily: fonts.heading,
   },
   subtitle: {
     textAlign: "center",
     fontSize: 18,
     paddingHorizontal: 20,
-    color: colors.heading
+    color: colors.heading,
+    fontFamily: fonts.text
   },
   button: {
     justifyContent: 'center',
@@ -59,10 +66,10 @@ const styles = StyleSheet.create({
     width: 56,
   },
   image: {
-    width: 292,
-    height: 284,
+    height: Dimensions.get('window').width * 0.7,
   },
-  buttonText: {
-    color: colors.white
+  buttonIcon: {
+    color: colors.white,
+    fontSize: 24
   }
 })
