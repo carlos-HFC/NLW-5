@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/core'
-import { StyleSheet, Text, TextInput, View, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 
 import { Button } from '../components/Button'
 import colors from '../styles/colors'
@@ -53,8 +53,8 @@ export function UserIdentification() {
                 value={name} onChangeText={handleChange}
                 onBlur={handleBlur} onFocus={handleFocus} />
 
-              <View style={styles.footer}>
-                <Button title="Confirmar" onPress={handleSubmit} />
+              <View style={[styles.footer, !isFilled && styles.disabled]}>
+                <Button title="Confirmar" onPress={handleSubmit} disabled={!isFilled} />
               </View>
             </View>
           </View>
@@ -66,19 +66,19 @@ export function UserIdentification() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    width: "100%",
     alignItems: 'center',
-    justifyContent: 'space-around'
+    flex: 1,
+    justifyContent: 'space-around',
+    width: "100%",
   },
   content: {
     flex: 1,
     width: '100%',
   },
   form: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 54,
   },
   emoji: {
@@ -88,27 +88,30 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.gray,
     color: colors.heading,
+    fontFamily: fonts.text,
     fontSize: 18,
     marginTop: 50,
     padding: 10,
     textAlign: 'center',
     width: '100%',
-    fontFamily: fonts.text
   },
   title: {
-    fontSize: 24,
-    textAlign: 'center',
     color: colors.heading,
     fontFamily: fonts.heading,
+    fontSize: 24,
     lineHeight: 32,
-    marginTop: 24
+    marginTop: 24,
+    textAlign: 'center',
   },
   footer: {
-    width: "100%",
     marginTop: 40,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    width: "100%",
   },
   header: {
     alignItems: 'center',
+  },
+  disabled: {
+    opacity: 0.5,
   }
 })

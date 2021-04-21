@@ -42,27 +42,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   title: {
-    fontSize: 32,
-    textAlign: "center",
     color: colors.heading,
-    marginTop: 38,
-    lineHeight: 34,
     fontFamily: fonts.heading,
+    fontSize: 32,
+    lineHeight: 34,
+    marginTop: 38,
+    textAlign: "center",
   },
   subtitle: {
-    textAlign: "center",
+    color: colors.heading,
+    fontFamily: fonts.text,
     fontSize: 18,
     paddingHorizontal: 20,
-    color: colors.heading,
-    fontFamily: fonts.text
+    textAlign: "center",
   },
   button: {
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.green,
     borderRadius: 16,
-    marginBottom: 10,
     height: 56,
+    justifyContent: 'center',
+    marginBottom: 10,
     width: 56,
   },
   image: {

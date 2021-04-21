@@ -20,15 +20,15 @@ export const Button = ({ title, ...rest }: IButtonProps) => {
 
 const styles = StyleSheet.create({
   button: {
+    alignItems: 'center',
     backgroundColor: colors.green,
     borderRadius: 16,
     height: 56,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   buttonText: {
     color: colors.white,
+    fontFamily: fonts.heading,
     fontSize: 16,
-    fontFamily: fonts.heading
   }
 })
