@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/core'
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 
 import { Button } from '../components/Button'
 import colors from '../styles/colors'
@@ -13,7 +14,22 @@ export function UserIdentification() {
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
 
-  const handleSubmit = () => navigation.navigate('Confirmation')
+  async function handleSubmit() {
+    if (!name) return Alert.alert("Me diga como te chamar 😢")
+
+    try {
+      await AsyncStorage.setItem('@plantmanager:user', name)
+      navigation.navigate("Confirmation", {
+        title: "Prontinho",
+        subtitle: "Agora vamos começar a cuidar das suas \n plantinhas com muito cuidado",
+        buttonTitle: "Começar",
+        icon: "smile",
+        nextScreen: "PlantSelect",
+      })
+    } catch (error) {
+      Alert.alert("Não foi possível salvar o seu nome 😢")
+    }
+  }
 
   function handleBlur() {
     setIsFocused(false)
@@ -53,8 +69,8 @@ export function UserIdentification() {
                 value={name} onChangeText={handleChange}
                 onBlur={handleBlur} onFocus={handleFocus} />
 
-              <View style={[styles.footer, !isFilled && styles.disabled]}>
-                <Button title="Confirmar" onPress={handleSubmit} disabled={!isFilled} />
+              <View style={styles.footer}>
+                <Button title="Confirmar" onPress={handleSubmit} disabled={!name} />
               </View>
             </View>
           </View>
@@ -110,8 +126,5 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-  },
-  disabled: {
-    opacity: 0.5,
   }
 })
