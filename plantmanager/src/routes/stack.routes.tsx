@@ -1,20 +1,23 @@
 import React, { FC } from 'react'
 import { createStackNavigator } from "@react-navigation/stack";
 
-import colors from '../styles/colors'
+import AuthRoutes from './tab.routes'
 import { Confirmation } from '../pages/Confirmation';
-import { PlantSelect } from '../pages/PlantSelect';
+import { PlantSave } from '../pages/PlantSave';
 import { UserIdentification } from '../pages/UserIdentification';
 import { Welcome } from '../pages/Welcome';
+import colors from '../styles/colors'
 
 const { Navigator, Screen } = createStackNavigator()
 
 const AppRoutes: FC = () => (
   <Navigator headerMode="none" screenOptions={{ cardStyle: { backgroundColor: colors.white } }}>
-    <Screen name="Confirmation" component={Confirmation} />
-    <Screen name="PlantSelect" component={PlantSelect} />
-    <Screen name="UserIdentification" component={UserIdentification} />
     <Screen name="Welcome" component={Welcome} />
+    <Screen name="UserIdentification" component={UserIdentification} />
+    <Screen name="Confirmation" component={Confirmation} />
+    <Screen name="PlantSelect" component={AuthRoutes} />
+    <Screen name="PlantSave" component={PlantSave} />
+    <Screen name="MyPlants" component={AuthRoutes} />
   </Navigator>
 )
 
