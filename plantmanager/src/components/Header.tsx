@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/core';
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
 
@@ -7,12 +9,29 @@ import colors from '../styles/colors'
 import fonts from '../styles/fonts';
 
 export const Header = () => {
+  const route = useRoute()
+
+  const [username, setUsername] = useState('')
+
+  useEffect(() => {
+    AsyncStorage.getItem("@plantmanager:user")
+      .then(data => setUsername(data || ''))
+  }, [])
+
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.greeting}>Olá,</Text>
-        <Text style={styles.username}>Carlos</Text>
-      </View>
+      {route.name === "Nova Planta"
+        ? (
+          <View>
+            <Text style={styles.greeting}>Olá,</Text>
+            <Text style={styles.username}>{username}</Text>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.greeting}>Minhas</Text>
+            <Text style={styles.username}>Plantinhas</Text>
+          </View>
+        )}
       <View>
         <Image source={user} style={styles.image} />
       </View>
