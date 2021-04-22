@@ -10,7 +10,7 @@ interface IButtonProps extends TouchableOpacityProps {
 
 export const Button = ({ title, ...rest }: IButtonProps) => {
   return (
-    <TouchableOpacity style={styles.button} activeOpacity={.7} {...rest}>
+    <TouchableOpacity style={[styles.button, rest.disabled && { opacity: .5 }]} activeOpacity={.7} {...rest}>
       <Text style={styles.buttonText}>
         {title}
       </Text>
