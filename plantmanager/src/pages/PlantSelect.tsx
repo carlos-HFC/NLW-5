@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigation } from '@react-navigation/core'
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
-import { EnvButton } from '../components/EnvButton'
 
+import { EnvButton } from '../components/EnvButton'
 import { Header } from '../components/Header'
 import { Loader } from '../components/Loader'
 import { PlantCardPrimary } from '../components/PlantCardPrimary'
+import { PlantProps } from '../libs/storage'
 import api from '../services/api'
 import colors from '../styles/colors'
 import fonts from '../styles/fonts'
@@ -14,20 +16,9 @@ interface EnvironmentsProps {
   title: string
 }
 
-interface PlantProps {
-  id: number
-  name: string
-  about: string
-  water_tips: string
-  photo: string
-  environments: string[],
-  frequency: {
-    times: number,
-    repeat_every: string
-  }
-}
-
 export function PlantSelect() {
+  const navigation = useNavigation()
+
   const [plants, setPlants] = useState<PlantProps[]>([])
   const [environments, setEnvironments] = useState<EnvironmentsProps[]>([])
   const [environmentSelected, setEnvironmentSelected] = useState("")
@@ -35,7 +26,6 @@ export function PlantSelect() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [loadedAll, setLoadedAll] = useState(false)
 
   useEffect(() => {
     api.get("/plants_environments")
@@ -85,6 +75,10 @@ export function PlantSelect() {
     setFilteredPlants(filtered)
   }
 
+  function handlePlantSelect(plant: PlantProps) {
+    navigation.navigate("PlantSave", { plant })
+  }
+
   if (loading) return <Loader />
 
   return (
@@ -96,7 +90,7 @@ export function PlantSelect() {
       </View>
 
       <View>
-        <FlatList data={environments} horizontal
+        <FlatList data={environments} keyExtractor={item => item.key} horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.envList}
           renderItem={({ item }) => (
@@ -107,13 +101,13 @@ export function PlantSelect() {
       </View>
 
       <View style={styles.plants}>
-        <FlatList data={filteredPlants}
+        <FlatList data={filteredPlants} keyExtractor={item => String(item.id)}
           showsVerticalScrollIndicator={false}
           numColumns={2}
           onEndReachedThreshold={0.1}
           onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd)}
           renderItem={({ item }) => (
-            <PlantCardPrimary data={item} />
+            <PlantCardPrimary data={item} onPress={() => handlePlantSelect(item)} />
           )}
           ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.green} /> : <></>}
         />
