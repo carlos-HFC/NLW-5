@@ -1,6 +1,7 @@
 import React from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Platform } from 'react-native'
 
 import { MyPlants } from '../pages/MyPlants'
 import { PlantSelect } from '../pages/PlantSelect'
@@ -17,6 +18,7 @@ const AuthRoutes = () => {
         labelPosition: "beside-icon",
         style: {
           height: 88,
+          paddingVertical: Platform.OS === 'ios' ? 20 : 0
         }
       }}>
       <Screen name="Nova Planta" component={PlantSelect}
