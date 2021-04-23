@@ -1,9 +1,11 @@
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { usePlayer } from '../../context/PlayerContext'
 import { api } from '../../services/api'
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString'
 
@@ -14,8 +16,13 @@ type IEpisodeProps = {
 }
 
 export default function Episode({ episode }: IEpisodeProps) {
+  const { play } = usePlayer()
+
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episode.title} | Podcastr</title>
+      </Head>
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button type="button">
@@ -23,7 +30,7 @@ export default function Episode({ episode }: IEpisodeProps) {
           </button>
         </Link>
         <Image width={700} height={160} src={episode.thumbnail} objectFit="cover" />
-        <button type="button">
+        <button type="button" onClick={() => play(episode)}>
           <img src="/play.svg" alt="Tocar episódio" />
         </button>
       </div>
@@ -40,9 +47,33 @@ export default function Episode({ episode }: IEpisodeProps) {
   )
 }
 
+
+/**
+ * SE OS paths ESTIVER VAZIO, NO MOMENTO DA BUILD, O NEXTJS NÃO GERARÁ PÁGINAS DE FORMA ESTÁTICA
+ * SE O fallback ESTIVER false, E OS paths ESTIVER VAZIO, AO TENTAR ACESSAR A PÁGINA, GERARÁ UM ERRO 404
+ * SE O fallback ESTIVER true, E OS paths ESTIVER VAZIO, AO TENTAR ACESSAR A PÁGINA, ELE FARÁ UMA REQUISIÇÃO PELO BROWSER PARA PROCURAR OS DADOS. CONTUDO, EM ALGUM MOMENTO POR CONTA DO TEMPO QUE PODE DEMORAR A REQUISIÇÃO, OS DADOS QUE DEVERÃO VIR, ESTARÃO VAZIOS, E ASSIM, ELE NÃO CONSEGUIRÁ PRÉ-RENDERIZAR A PÁGINA DE FORMA ESTÁTICA JÁ QUE ALGUM DADO ESTARIA VAZIO. SENDO ASSIM, ELE SÓ CARREGARÁ AS PÁGINAS SE O USUÁRIO ACESSÁ-LAS.
+ * SE O fallback ESTIVER blocking, ELE BUSCARÁ OS DADOS PELO NEXTJS. SENDO ASSIM, O USUÁRIO SÓ SERÁ NAVEGADO PARA TELA DESEJADA QUANDO OS DADOS ESTIVEREM CARREGADOS.
+ */
+
 export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await api.get('/episodes', {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  })
+
+  const paths = data.map(ep => {
+    return {
+      params: {
+        slug: ep.id
+      }
+    }
+  })
+
   return {
-    paths: [],
+    paths,
     fallback: "blocking"
   }
 }
