@@ -1,40 +1,49 @@
 import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { GetStaticProps } from "next"
+import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 
+import { usePlayer } from "../context/PlayerContext"
 import { api } from "../services/api"
 import { convertDurationToTimeString } from "../utils/convertDurationToTimeString"
 
 import styles from './_home.module.scss'
 
 type IHomeProps = {
-  latestEpisodes: Omit<Episode, 'description'>[]
-  allEpisodes: Omit<Episode, 'description'>[]
+  latestEpisodes: Episode[]
+  allEpisodes: Episode[]
 }
 
 export default function Home({ latestEpisodes, allEpisodes }: IHomeProps) {
+  const { playList } = usePlayer()
+
+  const episodeList = [...latestEpisodes, ...allEpisodes]
+
   return (
     <div className={styles.homepage}>
+      <Head>
+        <title>Home | Podcastr</title>
+      </Head>
       <section className={styles.latestEpisodes}>
         <h2>Últimos lançamentos</h2>
 
         <ul>
-          {latestEpisodes.map(ep => (
-            <li key={ep.id}>
-              <Image src={ep.thumbnail} alt={ep.title} width={192} height={192} objectFit="cover" />
+          {latestEpisodes.map((episode, i) => (
+            <li key={episode.id}>
+              <Image src={episode.thumbnail} alt={episode.title} width={192} height={192} objectFit="cover" />
 
               <div className={styles.episodeDetails}>
-                <Link href={`/episodes/${ep.id}`}>
-                  <a>{ep.title}</a>
+                <Link href={`/episodes/${episode.id}`}>
+                  <a>{episode.title}</a>
                 </Link>
-                <p>{ep.members}</p>
-                <span>{ep.publishedAt}</span>
-                <span>{ep.durationAsString}</span>
+                <p>{episode.members}</p>
+                <span>{episode.publishedAt}</span>
+                <span>{episode.durationAsString}</span>
               </div>
 
-              <button type="button">
+              <button type="button" onClick={() => playList(episodeList, i)}>
                 <img src="/play-green.svg" alt="Tocar episódio" />
               </button>
             </li>
@@ -57,21 +66,21 @@ export default function Home({ latestEpisodes, allEpisodes }: IHomeProps) {
             </tr>
           </thead>
           <tbody>
-            {allEpisodes.map(ep => (
-              <tr key={ep.id}>
+            {allEpisodes.map((episode, i) => (
+              <tr key={episode.id}>
                 <td style={{ width: 72 }}>
-                  <Image width={120} height={120} src={ep.thumbnail} alt={ep.title} objectFit="cover" />
+                  <Image width={120} height={120} src={episode.thumbnail} alt={episode.title} objectFit="cover" />
                 </td>
                 <td>
-                  <Link href={`/episodes/${ep.id}`}>
-                    <a>{ep.title}</a>
+                  <Link href={`/episodes/${episode.id}`}>
+                    <a>{episode.title}</a>
                   </Link>
                 </td>
-                <td>{ep.members}</td>
-                <td style={{ width: 100 }}>{ep.publishedAt}</td>
-                <td>{ep.durationAsString}</td>
+                <td>{episode.members}</td>
+                <td style={{ width: 100 }}>{episode.publishedAt}</td>
+                <td>{episode.durationAsString}</td>
                 <td>
-                  <button type="button">
+                  <button type="button" onClick={() => playList(episodeList, i + latestEpisodes.length)}>
                     <img src="/play-green.svg" alt="Tocar episódio" />
                   </button>
                 </td>
@@ -93,16 +102,16 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   })
 
-  const episodes = data.map(ep => {
+  const episodes = data.map(episode => {
     return {
-      id: ep.id,
-      title: ep.title,
-      thumbnail: ep.thumbnail,
-      members: ep.members,
-      publishedAt: format(parseISO(ep.published_at), 'd MMM yy', { locale: ptBR }),
-      duration: Number(ep.file.duration),
-      durationAsString: convertDurationToTimeString(ep.file.duration),
-      url: ep.file.url,
+      id: episode.id,
+      title: episode.title,
+      thumbnail: episode.thumbnail,
+      members: episode.members,
+      publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
+      duration: Number(episode.file.duration),
+      durationAsString: convertDurationToTimeString(episode.file.duration),
+      url: episode.file.url,
     }
   })
 
