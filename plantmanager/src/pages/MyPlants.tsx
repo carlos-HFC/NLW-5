@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { formatDistance } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
+import { Alert, FlatList, Image, StyleSheet, Text, View } from 'react-native'
 
 import { Header } from '../components/Header'
+import { Loader } from '../components/Loader'
 import { PlantCardSecondary } from '../components/PlantCardSecondary'
-import { plantLoad, PlantProps } from '../libs/storage'
+import { plantLoad, PlantProps, plantRemove } from '../libs/storage'
 import waterdrop from '../assets/waterdrop.png'
 import colors from '../styles/colors'
 import fonts from '../styles/fonts'
@@ -22,6 +23,11 @@ export function MyPlants() {
   async function loadStorageData() {
     const plantsStoraged = await plantLoad()
 
+    if (!plantsStoraged.length) {
+      setNextWaterd("Você não tem plantas para regar")
+      return setLoading(false)
+    }
+
     const nextTime = formatDistance(
       new Date(plantsStoraged[0].dateTimeNotification).getTime(),
       new Date().getTime(),
@@ -33,6 +39,32 @@ export function MyPlants() {
     setMyPlants(plantsStoraged)
     setLoading(false)
   }
+
+  function handleRemove(plant: PlantProps) {
+    Alert.alert(
+      "Deletar",
+      `Deseja mesmo deletar sua ${plant.name}?`,
+      [
+        {
+          text: "Cancelar",
+          style: 'cancel',
+        },
+        {
+          text: "Deletar",
+          onPress: async () => {
+            try {
+              await plantRemove(plant.id)
+              setMyPlants(myPlants => myPlants.filter(itens => itens.id !== plant.id))
+            } catch (error) {
+              Alert.alert("Não foi possível remover!")
+            }
+          }
+        },
+      ],
+    )
+  }
+
+  if (loading) return <Loader />
 
   return (
     <View style={styles.container}>
@@ -51,7 +83,9 @@ export function MyPlants() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flex: 1 }}
           keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => <PlantCardSecondary data={item} />} />
+          renderItem={({ item }) => (
+            <PlantCardSecondary data={item} handleRemove={() => handleRemove(item)} />
+          )} />
       </View>
     </View>
   )
